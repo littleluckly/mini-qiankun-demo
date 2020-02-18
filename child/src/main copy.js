@@ -5,8 +5,20 @@ import store from './store'
 
 Vue.config.productionTip = false
 
-  __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__;
 let instance = null
+
+const render = ()=>{
+  instance = new Vue({
+    router,
+    store,
+    render: h => h(App)
+  }).$mount('#app')
+}
+if(!window.__POWERD_BY_QIANKUN__){
+  render()
+}else{
+  __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__;
+}
 /**
  * bootstrap 只会在子应用初始化的时候调用一次，下次子应用重新进入时会直接调用 mount 钩子，不会再重复触发 bootstrap。
  * 通常我们可以在这里做一些全局变量的初始化，比如不会在 unmount 阶段被销毁的应用级别的缓存等。
@@ -20,11 +32,7 @@ export async function bootstrap() {
  */
 export async function mount(props) {
   console.log(props);  
-  instance = new Vue({
-    router,
-    store,
-    render: h => h(App)
-  }).$mount('#app')
+  render()
 }
 
 /**
@@ -32,4 +40,5 @@ export async function mount(props) {
  */
 export async function unmount() {
   instance.$destroy()
+  instance = null;
 }

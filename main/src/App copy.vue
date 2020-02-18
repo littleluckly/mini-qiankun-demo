@@ -9,8 +9,8 @@
         </ol>
       </nav>
     </header>
-    <!-- <div v-if="loading">loading</div>
-    <div class="appContainer" v-html="content" /> -->
+    <div v-if="loading">loading</div>
+    <!-- <div class="appContainer" v-html="content" /> -->
     <p>内容管理平台</p>
     <div class="headlesscms" style="height:300px;overflow:auto;">
       <div v-html="headlesscmsContent"></div>
@@ -27,27 +27,17 @@ import { registerMicroApps, runAfterFirstMounted, setDefaultMountApp, start } fr
 const genActiveRule = routerPrefix => {
   return location => location.pathname.startsWith(routerPrefix)
 }
-const appInfos = [
-    { name: 'child', entry: '//localhost:8081', href: '/child' },
-  ]
 export default {
   name: 'master',
   data () {
     return {
       loading: false,
       content: null,
-      headlesscmsContent:null,
-      decisionmanageContent:null,
-      // apps: appInfos.map(app => {
-      //   return {
-      //     ...app,
-      //     render: this.render,
-      //     activeRule: genActiveRule(app.href)
-      //   }
-      // }),
+      headlesscmsContent: null,
+      decisionmanageContent: null,
       appInfos:[
         { name: 'headlesscmsContent', entry: '//localhost:8081', href: '/headlesscmsContent', render: this.renderheadlesscmsContent },
-        { name: 'decisionmanageContent', entry: '//localhost:8082', href: '/decisionmanageContent', render: this.renderdecisionmanageContent },
+        { name: 'decisionmanageContent', entry: '//localhost:8081', href: '/decisionmanageContent', render: this.renderdecisionmanageContent },
       ],
     }
   },
@@ -73,12 +63,21 @@ export default {
     goto (title, href) {
       window.history.pushState({}, title, href)
     },
+    renderCommon(contentType){
+      return ({ content, loading })=> {
+          this[contentType] = content
+        }
+    },
     renderheadlesscmsContent ({ appContent, loading }) {
       this.headlesscmsContent = appContent
-      this.loading = loading
+      // this.loading = loading
     },
     renderdecisionmanageContent ({ appContent, loading }) {
       this.decisionmanageContent = appContent
+      // this.loading = loading
+    },
+    render ({ appContent, loading }) {
+      this.content = appContent
       this.loading = loading
     },
     initQiankun () {

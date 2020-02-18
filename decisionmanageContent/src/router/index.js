@@ -22,7 +22,7 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
-  base: '/headlesscmsContent/',
+  base: '/decisionmanageContent/',
   routes
 })
 
