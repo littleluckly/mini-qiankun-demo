@@ -4,7 +4,7 @@
       <nav>
         <ol>
           <li key='test'><a @click="goto('test', '/test')">展示多个子应用</a></li>
-          
+
           <li v-for="app of apps" :key="app.name">
             <a @click="goto(app.name, app.href)">{{app.name}}</a>
           </li>
@@ -103,7 +103,7 @@ export default {
         }
       )
       const defaultApp = apps[0] || {}
-      // setDefaultMountApp(defaultApp.href)
+      setDefaultMountApp('/test')
       runAfterFirstMounted(() => {
         // eslint-disable-next-line no-console
         console.info('first app mounted')
