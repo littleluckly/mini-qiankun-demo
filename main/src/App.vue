@@ -3,6 +3,8 @@
     <header>
       <nav>
         <ol>
+          <li key='test'><a @click="goto('test', '/test')">展示多个子应用</a></li>
+          
           <li v-for="app of apps" :key="app.name">
             <a @click="goto(app.name, app.href)">{{app.name}}</a>
           </li>
@@ -25,11 +27,13 @@
 <script>
 import { registerMicroApps, runAfterFirstMounted, setDefaultMountApp, start } from 'qiankun'
 const genActiveRule = routerPrefix => {
-  return location => location.pathname.startsWith(routerPrefix)
+  return location => {    
+    if(location.pathname.startsWith('/test')){
+      return true
+    }
+    return location.pathname.startsWith(routerPrefix)
+  }
 }
-const appInfos = [
-    { name: 'child', entry: '//localhost:8081', href: '/child' },
-  ]
 export default {
   name: 'master',
   data () {
@@ -38,16 +42,9 @@ export default {
       content: null,
       headlesscmsContent:null,
       decisionmanageContent:null,
-      // apps: appInfos.map(app => {
-      //   return {
-      //     ...app,
-      //     render: this.render,
-      //     activeRule: genActiveRule(app.href)
-      //   }
-      // }),
       appInfos:[
-        { name: 'headlesscmsContent', entry: '//localhost:8081', href: '/headlesscmsContent', render: this.renderheadlesscmsContent },
-        { name: 'decisionmanageContent', entry: '//localhost:8082', href: '/decisionmanageContent', render: this.renderdecisionmanageContent },
+        { name: 'headlesscmsContent', entry: '//localhost:8081', href: '/headlesscmsContent' },
+        { name: 'decisionmanageContent', entry: '//localhost:8082', href: '/decisionmanageContent' },
       ],
     }
   },
@@ -56,6 +53,7 @@ export default {
         return this.appInfos.map(app => {
           return {
             ...app,
+            render: this.render(app.name),
             activeRule: genActiveRule(app.href)
           }
         })
@@ -73,13 +71,11 @@ export default {
     goto (title, href) {
       window.history.pushState({}, title, href)
     },
-    renderheadlesscmsContent ({ appContent, loading }) {
-      this.headlesscmsContent = appContent
-      this.loading = loading
-    },
-    renderdecisionmanageContent ({ appContent, loading }) {
-      this.decisionmanageContent = appContent
-      this.loading = loading
+    render(type){
+      return ({ appContent, loading })=> {
+        this[type] = appContent
+        this.loading = loading
+      }
     },
     initQiankun () {
       const { apps } = this
@@ -107,12 +103,12 @@ export default {
         }
       )
       const defaultApp = apps[0] || {}
-      setDefaultMountApp(defaultApp.href)
+      // setDefaultMountApp(defaultApp.href)
       runAfterFirstMounted(() => {
         // eslint-disable-next-line no-console
         console.info('first app mounted')
       })
-      start({ prefetch: true })
+      start({  singular: false })
     }
   }
 }
